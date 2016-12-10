@@ -43,7 +43,7 @@ $ ./bin/spark-shell
 ```
 ![packageAndRun](media/01-packageAndRun.jpg)
 
-## 源码导入与代码调试
+## 源码导入与代码运行
 ### 导入源码到Intellij IDEA 16
 现在IDEA对scala支持已经比较完善，导入Spark工程非常简单：
 > Menu -> File -> **Open** -> {spark dir}/**pom.xml** -> **Open as Project**
@@ -61,7 +61,7 @@ $ ./bin/spark-shell
 
 参数配置如下：
 ![runConfig](media/01-runConfig.jpg)
-`VM options: -Dspark.master=local`代码使用本地模式运行Spark代码，也可以选择其他模式。
+`VM options: -Dspark.master=local`代表使用本地模式运行Spark代码，也可以选择其他模式。
 保存配置后，可以看到`LogQuery`在运行选项里了：
 ![runLogQuery](media/01-runLogQuery.jpg)
 
@@ -100,7 +100,7 @@ $ ./bin/spark-shell
 终于再次运行`LogQuery`的时候，可以看到输出啦：
 ![runLogQuerySuccessfully](media/01-runLogQuerySuccessfully.jpg)
 ### 单步调试源代码
-千辛万苦地终于让实例代码在IDE里跑起来了，是不是很有成就感。其实做了那么多的铺垫工作，在IDE里面运行代码的最大的一个好处是可以**单步调试**！
+千辛万苦地终于让实例代码在IDE里跑起来了，是不是很有成就感。其实做了那么多的铺垫工作，在IDE里面运行代码的最大福利是可以**单步调试**！
 很简单，选择断点，然后`Run -> Debug`，可以看到中间变量值等等，其他的自行探索吧:
 ![debug](media/01-debug.jpg)
 

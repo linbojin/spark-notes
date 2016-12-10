@@ -7,6 +7,19 @@ tags: spark-notes
 搭建Spark源码研读和代码调试的开发环境
 -------
 
+* [Table of Contents](#table-of-contents)
+  * [源码获取与编译](#源码获取与编译)
+     * [从Github上获取Spark源码](#从github上获取spark源码)
+     * [编译Spark项目](#编译spark项目)
+  * [源码导入与代码运行](#源码导入与代码运行)
+     * [导入源码到Intellij IDEA 16](#导入源码到intellij-idea-16)
+     * [运行实例代码](#运行实例代码)
+        * [1. 配置运行参数：](#1-配置运行参数)
+        * [2. 添加缺失的flume sink源代码](#2-添加缺失的flume-sink源代码)
+        * [3. 添加运行依赖的jars](#3-添加运行依赖的jars)
+        * [4. 成功运行实例代码](#4-成功运行实例代码)
+    * [单步调试源代码](#单步调试源代码)
+
 工欲善其事，必先利其器，第一篇笔记介绍如何搭建源码研读和代码调试的开发环境。
 一些必要的开发工具，请自行提前安装：
 
@@ -99,7 +112,7 @@ $ ./bin/spark-shell
 #### 4. 成功运行实例代码
 终于再次运行`LogQuery`的时候，可以看到输出啦：
 ![runLogQuerySuccessfully](media/01-runLogQuerySuccessfully.jpg)
-### 单步调试源代码
+## 单步调试源代码
 千辛万苦地终于让实例代码在IDE里跑起来了，是不是很有成就感。其实做了那么多的铺垫工作，在IDE里面运行代码的最大福利是可以**单步调试**！
 很简单，选择断点，然后`Run -> Debug`，可以看到中间变量值等等，其他的自行探索吧:
 ![debug](media/01-debug.jpg)

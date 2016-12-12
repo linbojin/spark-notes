@@ -117,4 +117,6 @@ $ ./bin/spark-shell
 很简单，选择断点，然后`Run -> Debug`，可以看到中间变量值等等，其他的自行探索吧:
 ![debug](media/01-debug.jpg)
 
+-------
+> *如果你发现什么错误，或者遇到什么问题，欢迎提交[issues](https://github.com/linbojin/spark-notes/issues)。*
 

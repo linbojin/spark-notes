@@ -211,8 +211,27 @@ res0: Seq[Int] = List(1, 2, 3)
 ```
 虽然它可以用`flatMap(x => x)`来代替（这也是为什么spark RDD api函数里面没有它），但是自己动手实现一下这个简单的api函数，可以加深对RDD模型的理解，也能熟悉Spark开发流程，甚至贡献代码给社区。
 
-### 使用
-参考[Scala flatten](https://github.com/scala/scala/blob/2.11.x/src/library/scala/collection/generic/GenericTraversableTemplate.scala#L169)的实现源码和Spark flatMap的实现源码:
+### 难点和突破口
+看到这个任务最直观的想法，就是修改一下spark的flatMap，比如：
+
+```
+def flatten[U: ClassTag](): RDD[U] = withScope {
+  new MapPartitionsRDD[U, T](this, (context, pid, iter) => iter.flatten)
+}
+```
+但是问题没有那么简单，在Intellij里面你会看到iter: Iterator[T]没有flatten这个函数，因为可以flatten的数据集的元素必定是可以遍历的类型，比如Seq[Int]，所以Iterator[T]的变量没有flatten，只有类似Iterator[Seq[T]]]的变量才有。
+然后第二想法，是用flatMap(x => x):
+
+```
+def flatten[U: ClassTag](): RDD[U] = withScope {
+  new MapPartitionsRDD[U, T](this, (context, pid, iter) => iter.flatMap((x => x))
+}
+```
+再一次，失败了，同样因为x是T类型的，编译器认为它是不可遍历的，而flatMap必须接受可遍历类型作为返回。
+到这里我们基本认清了问题的难点所在和关键突破口，是不是激起了你的挑战欲望，你可以自己试试。下一节开始讲可行的解决方案。
+
+### 开发和测试
+我们可以参考[Scala flatten](https://github.com/scala/scala/blob/2.11.x/src/library/scala/collection/generic/GenericTraversableTemplate.scala#L169)的实现源码和Spark flatMap的实现源码:
 
 ```
 def flatten[B](implicit asTraversable: A => GenTraversableOnce[B]): CC[B] = {
@@ -227,8 +246,7 @@ def flatMap[U: ClassTag](f: T => TraversableOnce[U]): RDD[U] = withScope {
   new MapPartitionsRDD[U, T](this, (context, pid, iter) => iter.flatMap(cleanF))
 }
 ```
-
-可以编写spark flatten api函数如下：
+然后编写spark flatten api函数如下：
 
 ```
 def flatten[U: ClassTag](implicit asTraversable: T => TraversableOnce[U]): RDD[U] = withScope {
@@ -237,16 +255,137 @@ def flatten[U: ClassTag](implicit asTraversable: T => TraversableOnce[U]): RDD[U
   new MapPartitionsRDD[U, T](this, (context, pid, iter) => iter.flatMap(cleanF))
 }
 ```
-asTraversable隐式函数，是为了把type T隐式地转换为可以遍历的TraversableOnce[U]类型，因为可以flatten的数据集的元素必定是可以遍历的类型，比如Seq[Int]。为什么要这样转换，因为Spark代码里面，RDD[T]的元素（也是`iter`迭代器的元素）类型是T，编译器并不知道T是否是可遍历类型，也就不能进一步flatten啦（你无法直接iter.flatten会编译不通过）。
+其中asTraversable是隐式函数，是为了把type T隐式地转换为可以遍历的TraversableOnce[U]类型（是Seq[Int]的父类，深入可以去了解scala的type system）。为什么要这样转换，就如第一节讲的，因为Spark代码里面，RDD[T]的元素（也是`iter`迭代器的元素）类型是T，编译器并不知道T是否是可遍历类型，也就不能进一步flatten啦。
+
+开始测试代码了，打开你的Terminal，macOS上我用[iTerm2](https://www.iterm2.com/)
 
 ```
 git checkout -b SN-add-rdd-flatten
+build/sbt clean package
+// 复制flatten的实现到RDD.scala里面，比如flatMap函数下面
 export SPARK_PREPEND_CLASSES=true
 ./build/sbt compile
+```
+`SPARK_PREPEND_CLASSES`是用于迭代式开发，我们已经用`sbt package`打包好了所有的依赖，只要让Spark编译你修改的部分，而不用编译全部的依赖，加速开发。参考[Useful Developer Tools](http://spark.apache.org/developer-tools.html)
 
+然后在spark-shell里面就能看到你的flatten函数了，结果如下，如果你也成功了，就给我点star吧，哈哈：
+![flatten](media/02-flatten.jpg)
+
+完整的开发流程，还需要有测试:
+> command + o， 跳转到RDDSuite.scala
+
+在`test("basic operations") {}
+`下面添加：
 
 ```
+  test("flatten") {
+    val nestedNums = sc.makeRDD(Array(Array(1, 2, 3), Array(4, 5), Array(6)), 2)
+    assert(nestedNums.flatten.collect().toList === List(1, 2, 3, 4, 5, 6))
+  }
+```
+然后确认测试通过：
+![sbtTest](media/02-sbtTest.jpg)
+![flattenTest](media/02-flattenTest.jpg)
 
+到了这一步，算是大功告成了，你甚至已经可以给spark社区提交pr啦，哈哈。
+因为有了test，我们可以随意重构我们的代码，比如不想用flatMap：
+
+```
+def flatten[U: ClassTag](implicit asTraversable: T => TraversableOnce[U]): RDD[U] = withScope {
+  new MapPartitionsRDD[U, T](this, (context, pid, iter) => {
+    var newIter: Iterator[U] = Iterator.empty
+    for (x <- iter) newIter ++= asTraversable(x)
+    newIter
+  })
+}
+```
+
+或者用更简洁的foldLeft:
+
+```
+def flatten[U: ClassTag](implicit asTraversable: T => TraversableOnce[U]): RDD[U] = withScope {
+  new MapPartitionsRDD[U, T](this, (context, pid, iter) => {
+    val emptyIter: Iterator[U] = Iterator.empty
+    iter.foldLeft[Iterator[U]](emptyIter)((newIter, x) => newIter ++ asTraversable(x))
+  })
+}
+```
+
+完整代码可以参考我创建的`SN-add-rdd-flatten`branch：https://github.com/linbojin/spark/commit/2b389082a529da570d15d41c7687d6139fe0926f
 
 ### 使用RDD隐式转换
+上面的实现，个人觉得已经OK，但是有一个不是”问题”的问题，如果你把flatten作用到一个不适用的RDD上面：
+
+```
+scala> val rdd = sc.parallelize(Seq(1,2,3))
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[0] at parallelize at <console>:24
+
+scala> rdd.flatten
+<console>:27: error: No implicit view available from Int => scala.collection.TraversableOnce[U].
+       rdd.flatten
+           ^
+```
+我说它不是“问题“，因为scala也是这样的：
+
+```
+scala> val l = List(1,2,3)
+l: List[Int] = List(1, 2, 3)
+
+scala> l.flatten
+<console>:13: error: No implicit view available from Int => scala.collection.GenTraversableOnce[B].
+       l.flatten
+         ^
+```
+那么真要解决它，也就是在不适用的RDD上面，不要显示这个函数，应该怎么做？用RDD隐式转换！这种方法也有一些limitation，因为RDD是invariant的（一个很复杂的topic，这里不讲了），不能做到像上面的方法那样generic，但是它的思想是很值得学习的，也是很”spark“的解决方案:
+
+第一步：参考PairRDDFunctions.scala和DoubleRDDFunctions.scala，在和RDD.scala相同的目录下创建TraversableRDDFunctions.scala：
+
+```
+package org.apache.spark.rdd
+
+import scala.reflect.ClassTag
+
+import org.apache.spark.internal.Logging
+
+/**
+ * Extra functions available on RDDs of TraversableOnce through an implicit conversion.
+ */
+class TraversableRDDFunctions[U](self: RDD[Seq[U]])(implicit et: ClassTag[U]) extends Logging with Serializable {
+
+  def flattenX: RDD[U] = self.withScope {
+    self.mapPartitions(iter => iter.flatten) // iter.foldLeft(Iterator.empty)((a,b) => a ++ b.toIterator) )
+  }
+}
+```
+
+第二步，添加隐式转换函数到object RDD里面： 
+
+```
+implicit def rddToTraversableRDDFunctions[U](rdd: RDD[Seq[U]])
+    (implicit et: ClassTag[U]): TraversableRDDFunctions[U] = {
+  new TraversableRDDFunctions(rdd)
+}
+```
+
+第三步，编译：
+
+```
+./build/sbt compile
+```
+
+第四步，运行spark-shell，可以看到flattenX函数只出现在RDD[Seq[Int]]上：
+![flattenX](media/02-flattenX.jpg)
+
+现在可以简单示意一下，为什么这种方法，有局限性，对RDD[List[Int]]，flatten照常工作，flattenX却不能了，因为RDD is invariant:
+> List[Int]是Seq[?]的子类，但是RDD[List[Int]]不是RDD[Set[?]]的子类：
+
+![](media/14821230664592.jpg)
+
+这部分完整代码，可以参考我的这个commit: https://github.com/linbojin/spark/commit/6c8755f16d264fb9aaa2911c27f24885f412988a
+
+感谢你阅读完我这么长的笔记，也恭喜你现在已经具备开发RDD API函数的能力啦。
+
+-------
+> *如果你发现什么错误，或者遇到什么问题，欢迎提交[issues](https://github.com/linbojin/spark-notes/issues)。*
+
 

@@ -118,7 +118,7 @@ RDD抽象类的源码可以分成几大部分：
 * 必须被子类实现的方法
 * 所有RDD都拥有的方法和属性
  * persistence相关的函数
- * 用于表示RDD的接口函数
+ * 用于表示RDD的接口函数<br>
  ![rddRepresentation](media/02-rddRepresentation.jpg)
  * Transformations（返回新的RDD）
  * Actions (启动一个job来计算结果)
@@ -286,7 +286,7 @@ export SPARK_PREPEND_CLASSES=true
     assert(nestedNums.flatten.collect().toList === List(1, 2, 3, 4, 5, 6))
   }
 ```
-然后确认测试通过：
+然后确认测试通过:<br>
 ![sbtTest](media/02-sbtTest.jpg)
 ![flattenTest](media/02-flattenTest.jpg)
 

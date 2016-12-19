@@ -1,6 +1,6 @@
 # Spark Research Papers
-Apache Spark started as a research project at UC Berkeley in the AMPLab, which focuses on big data analytics.
-You can find more about the research behind Spark in the following papers:
+Apache Spark started as a research project at UC Berkeley in the AMPLab, which focuses on big data analytics. You can find more about the research behind Spark in the following papers.
+
 My favourite ones:
 
 * [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing](Resilient Distributed Datasets A Fault Tolerant Abstraction for In-Memory Cluster Computing.pdf). Matei Zaharia, Mosharaf Chowdhury, Tathagata Das, Ankur Dave, Justin Ma, Murphy McCauley, Michael J. Franklin, Scott Shenker, Ion Stoica. NSDI 2012. April 2012. Best Paper Award.

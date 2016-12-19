@@ -18,6 +18,9 @@ tags: spark-notes
 		* [RDD函数](#rdd函数)
 		* [RDD隐式转换](#rdd隐式转换)
 	* [编写RDD API函数](#编写rdd-api函数)
+		* [难点和突破口](#难点和突破口)
+		* [开发和测试](#开发和测试)
+		* [使用RDD隐式转换](#使用rdd隐式转换)
 
 > Spark revolves around the concept of a resilient distributed dataset (RDD), which is an **immutable**, **fault-tolerant**, **partitioned** collection of elements that can be operated on in parallel. 
 

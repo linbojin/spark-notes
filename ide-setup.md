@@ -34,14 +34,14 @@ tags: spark-notes
 ## 源码获取与编译
 
 ### 从Github上获取Spark源码
-可以直接从Spark官方Github仓库拉取。本系列笔记基于**Spark 2.0.2**这个版本，所以先checkout这个tag，再进行之后的步骤：
+可以直接从Spark官方Github仓库拉取。本系列笔记基于**Spark 2.1.0**这个版本，所以先checkout这个tag，再进行之后的步骤：
 
 ```bash
 $ git clone git@github.com:apache/spark.git
 $ cd spark
 $ git tag
-$ git checkout v2.0.2 
-$ git checkout -b pin-tag-202
+$ git checkout v2.1.0
+$ git checkout -b pin-tag-210
 ```
 
 如果想要push自己的commits，也可以fork到自己的Github账号下，再拉取到本地，可以参考我之前的文章：[Reading Spark Souce Code in IntelliJ IDEA](https://linbojin.github.io/2016/01/09/Reading-Spark-Souce-Code-in-IntelliJ-IDEA/)

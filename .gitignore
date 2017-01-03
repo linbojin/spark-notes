@@ -16,4 +16,5 @@ project/plugins/project/
 .scala_dependencies
 .worksheet
 
+media/.DS_Store
 .DS_Store

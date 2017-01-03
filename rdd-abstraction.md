@@ -263,7 +263,7 @@ def flatten[U: ClassTag](implicit asTraversable: T => TraversableOnce[U]): RDD[U
 开始测试代码了，打开你的Terminal，macOS上我用[iTerm2](https://www.iterm2.com/)
 
 ```
-git checkout -b SN-add-rdd-flatten
+git checkout -b SN-add-rdd-flatten-tag-210
 build/sbt clean package
 // 复制flatten的实现到RDD.scala里面，比如flatMap函数下面
 export SPARK_PREPEND_CLASSES=true
@@ -314,7 +314,7 @@ def flatten[U: ClassTag](implicit asTraversable: T => TraversableOnce[U]): RDD[U
 }
 ```
 
-完整代码可以参考我创建的`SN-add-rdd-flatten`branch：https://github.com/linbojin/spark/commit/2b389082a529da570d15d41c7687d6139fe0926f
+完整代码可以参考我创建的`SN-add-rdd-flatten-tag-210`branch：https://github.com/linbojin/spark/commit/5abe3fda10f687f07aafe15bd3f96aab908f2107
 
 ### 使用RDD隐式转换
 上面的实现，个人觉得已经OK，但是有一个不是”问题”的问题，如果你把flatten作用到一个不适用的RDD上面：
@@ -384,7 +384,7 @@ implicit def rddToTraversableRDDFunctions[U](rdd: RDD[Seq[U]])
 
 ![](media/14821230664592.jpg)
 
-这部分完整代码，可以参考我的这个commit: https://github.com/linbojin/spark/commit/6c8755f16d264fb9aaa2911c27f24885f412988a
+这部分完整代码，可以参考我的这个commit: https://github.com/linbojin/spark/commit/f9dd9af894fdab98f2512faae091f1be70cab0ac
 
 感谢你阅读完我这么长的笔记，也恭喜你现在已经具备开发RDD API函数的能力啦。
 

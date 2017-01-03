@@ -6,6 +6,6 @@ A Deeper Understanding of Spark Internals (2014) - Aaron Davidson
 [Slide](2014-A-Deeper-Understanding-of-Spark-Internals-Aaron-Davidson.pdf) | [Video](https://www.youtube.com/watch?v=dmL0N3qfSc8)
 
 Advanced Apache Spark Training (2015) - Sameer Farooqui
-[Slide](2015-Advanced-Apache-Spark-Training-Sameer.pdf) | [Video Part 1](https://www.youtube.com/watch?v=7ooZ4S7Ay6Y) | [Video Part 2](https://www.youtube.com/watch?v=G7PcSBhfSQo&t=9380s)
+[Slide](2015-Advanced-Apache-Spark-Training-Sameer.pdf) | [Video Part 1](https://www.youtube.com/watch?v=l4ZYUfZuRbU&t=4768s) | [Video Part 2](https://www.youtube.com/watch?v=G7PcSBhfSQo&t=9380s)
 
 

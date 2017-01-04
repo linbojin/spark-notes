@@ -8,4 +8,6 @@ A Deeper Understanding of Spark Internals (2014) - Aaron Davidson
 Advanced Apache Spark Training (2015) - Sameer Farooqui
 [Slide](2015-Advanced-Apache-Spark-Training-Sameer.pdf) | [Video Part 1](https://www.youtube.com/watch?v=l4ZYUfZuRbU&t=4768s) | [Video Part 2](https://www.youtube.com/watch?v=G7PcSBhfSQo&t=9380s)
 
+Visual Spark Transformations and Actions (2015) - Databricks
+[Slide](2015-Visual-Spark-API-Databricks.pdf) | [Video](https://youtu.be/G7PcSBhfSQo?t=2m29s)
 

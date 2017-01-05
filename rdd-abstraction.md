@@ -123,7 +123,7 @@ RDD抽象类的源码可以分成几大部分：
  * Transformations（返回新的RDD）
  * Actions (启动一个job来计算结果)
  ![TransformationAndAction](media/02-TransformationAndActions.jpg)
- 这里推荐一个非常棒的文档，[Visual Spark Transformations and Actions](awesome-slides/2015-Visual-Spark-API-Databricks.pdf)，用图很形象地介绍RDD APIs.
+ 这里推荐一个非常棒的文档(文件比较大，可能需要pc端打开)，[Visual Spark Transformations and Actions](awesome-slides/2015-Visual-Spark-API-Databricks.pdf)，用图很形象地介绍RDD APIs.
 * 其他内部使用的方法和属性
 
 现在可以先阅读Transformations函数源码，其他的会在后面的笔记里面涉及，因为Actions都会调用`sc.runJon()`来运行job，深入理解Spark Scheduling之后再阅读会比较容易理解。
